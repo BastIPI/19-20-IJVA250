@@ -23,7 +23,10 @@ public class Client {
     @Column
     private LocalDate dateNaissance;
 
-    public Long getId() {
+    @OneToMany(mappedBy="client")
+    private Set<Facture> factures;
+
+	public Long getId() {
         return id;
     }
 
@@ -54,5 +57,13 @@ public class Client {
     public void setDateNaissance(LocalDate dateNaissance) {
         this.dateNaissance = dateNaissance;
     }
+
+    public Set<Facture> getFactures() {
+		return factures;
+	}
+
+	public void setFactures(Set<Facture> factures) {
+		this.factures = factures;
+	}
 
 }

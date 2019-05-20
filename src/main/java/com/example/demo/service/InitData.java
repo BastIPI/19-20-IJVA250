@@ -1,14 +1,19 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Client;
+import java.time.LocalDate;
+
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.time.LocalDate;
+import com.example.demo.entity.Article;
+import com.example.demo.entity.Client;
+import com.example.demo.entity.Facture;
+import com.example.demo.entity.LigneFacture;
 
 /**
  * Classe permettant d'insérer des données dans l'application.
@@ -35,14 +40,14 @@ public class InitData implements ApplicationListener<ApplicationReadyEvent> {
         Client client3 = newClient("D\"oe", "Jo;hn", LocalDate.of(2000, 1, 3));
         em.persist(client3);
 
-/*        Article a1 = new Article();
+        Article a1 = new Article();
         a1.setLibelle("Balayette");
         a1.setPrix(3.99);
         em.persist(a1);
 
         Article a2 = new Article();
         a2.setLibelle("Style espion");
-        a2.setPrix(130);
+        a2.setPrix(130d);
         em.persist(a2);
 
         Facture f1 = new Facture();
@@ -54,18 +59,16 @@ public class InitData implements ApplicationListener<ApplicationReadyEvent> {
         Facture f2 = new Facture();
         f2.setClient(client2);
         em.persist(f2);
-        em.persist(newLigneFacture(f2, a1, 10));*/
+        em.persist(newLigneFacture(f2, a1, 10));
     }
 
-    /*
-        private LigneFacture newLigneFacture(Facture f, Article a1, int quantite) {
-            LigneFacture lf1 = new LigneFacture();
-            lf1.setArticle(a1);
-            lf1.setQuantite(quantite);
-            lf1.setFacture(f);
-            return lf1;
-        }
-        */
+    private LigneFacture newLigneFacture(Facture f, Article a1, int quantite) {
+        LigneFacture lf1 = new LigneFacture();
+        lf1.setArticle(a1);
+        lf1.setQuantite(quantite);
+        lf1.setFacture(f);
+        return lf1;
+    }
 
     private Client newClient(String nom, String prenom, LocalDate dateNaissance) {
         Client client = new Client();

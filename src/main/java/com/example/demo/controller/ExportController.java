@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -32,6 +34,24 @@ public class ExportController {
         List<Client> allClients = clientService.findAllClients();
         LocalDate now = LocalDate.now();
         writer.println("Id;Nom;Prenom;Date de Naissance;Age");
+        
+        for (Client c : allClients) {
+        	String nom = c.getNom();
+        	if (nom.indexOf(";") != -1) {
+        		nom =  "\"" + nom + "\"";
+        	}
+
+        	String prenom = c.getPrenom();
+        	if (prenom.indexOf(";") != -1) {
+        		prenom =  "\"" + prenom + "\"";
+        	}
+        	
+            writer.println(c.getId() + ";"
+            		+ nom + ";"
+            		+ prenom + ";"
+            		+ c.getDateNaissance().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+            		+ ";" + Period.between(c.getDateNaissance(), now).getYears());
+        }
 
     }
 }
