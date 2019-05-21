@@ -38,4 +38,8 @@ public class Facture {
 	public Long getId() {
 		return id;
 	}
+	
+	public Double getTotal() {
+		return ligneFactures.stream().map(lf -> lf.getSousTotal()).reduce(0d, (x, y) -> x + y);
+	}
 }
