@@ -33,6 +33,7 @@ import com.example.demo.entity.Facture;
 import com.example.demo.entity.LigneFacture;
 import com.example.demo.service.ClientService;
 import com.example.demo.service.FactureService;
+import com.example.demo.utils.XlsxUtils;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -125,52 +126,10 @@ public class ExportController {
         Client client = clientService.findById(id);
 
         OutputStream fileOutputStream = response.getOutputStream();
-        
     	Workbook workbook = new XSSFWorkbook();
     	
-    	CellStyle stylePrix = workbook.createCellStyle();
-    	DataFormat format = workbook.createDataFormat();
-    	stylePrix.setDataFormat(format.getFormat("0.00€"));
-    	
     	for (Facture facture : client.getFactures()) {
-    		
-        	Sheet sheet = workbook.createSheet("Facture_" + facture.getId());
-        	Row headerRow = sheet.createRow(0);
-        	headerRow.createCell(0).setCellValue("ID");
-        	headerRow.createCell(1).setCellValue("Libellé");
-        	headerRow.createCell(2).setCellValue("Quantité");
-        	headerRow.createCell(3).setCellValue("Prix unitaire");
-        	headerRow.createCell(4).setCellValue("Total");
-        	
-        	int row = 1;
-        	for (LigneFacture ligneFacture : facture.getLigneFactures()) {
-            	Row rowFacture = sheet.createRow(row);
-            	rowFacture.createCell(0).setCellValue(ligneFacture.getArticle().getId());
-            	rowFacture.createCell(1).setCellValue(ligneFacture.getArticle().getLibelle());
-            	rowFacture.createCell(2).setCellValue(ligneFacture.getQuantite());
-            	rowFacture.createCell(3).setCellValue(ligneFacture.getArticle().getPrix());
-            	rowFacture.createCell(4).setCellValue(ligneFacture.getSousTotal());
-
-            	rowFacture.getCell(3).setCellStyle(stylePrix);
-            	rowFacture.getCell(4).setCellStyle(stylePrix);
-            	
-            	row++;
-        	}
-        	
-            for(int i = 0; i < 5; i++) {
-                sheet.autoSizeColumn(i);
-            }
-        
-        	sheet.createRow(row);
-        	CellRangeAddress mergedRegion = new CellRangeAddress(row, row, 0, 3);
-        	sheet.addMergedRegion(mergedRegion);
-        	Cell cellTotal = sheet.getRow(row).createCell(0);
-        	cellTotal.setCellValue("Total :");
-        	CellUtil.setCellStyleProperty(cellTotal, CellUtil.ALIGNMENT, HorizontalAlignment.RIGHT); 
-        	
-        	
-        	sheet.getRow(row).createCell(4).setCellValue(facture.getTotal());
-        	sheet.getRow(row).getCell(4).setCellStyle(stylePrix);
+    		XlsxUtils.createFeuilleFacture(workbook, facture);
     	}
 
     	workbook.write(fileOutputStream);
