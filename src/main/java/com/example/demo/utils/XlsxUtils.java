@@ -1,5 +1,9 @@
 package com.example.demo.utils;
 
+import java.io.OutputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
@@ -9,7 +13,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.example.demo.entity.Client;
 import com.example.demo.entity.Facture;
 import com.example.demo.entity.LigneFacture;
 
@@ -17,15 +23,51 @@ public final class XlsxUtils {
 
 	private XlsxUtils() {}
 	
-	public static void formatPrix(Workbook workbook, Cell cell) {
-    	CellStyle stylePrix = workbook.createCellStyle();
-    	DataFormat format = workbook.createDataFormat();
-    	stylePrix.setDataFormat(format.getFormat("0.00€"));
+	public static void createClasseurClients(Workbook workbook, List<Client> clients) {
+
+		// Créer la feuille
+    	Sheet sheet = workbook.createSheet("Clients");
     	
-		cell.setCellStyle(stylePrix);
+    	// Ligne de header
+    	Row row = sheet.createRow(0);
+    	row.createCell(0).setCellValue("ID");
+    	row.createCell(1).setCellValue("Nom");
+    	row.createCell(2).setCellValue("Prénom");
+    	row.createCell(3).setCellValue("Date de naissance");
+    	row.createCell(4).setCellValue("Age");
+    	
+    	// Boucle sur les clients
+        for (Client client : clients) {
+        	row = sheet.createRow(row.getRowNum() + 1);
+        	createLigneClient(workbook, row, client);
+        }
+        
+        // Redimensionnement automatique des colonnes
+        for(int i = 0; i < 5; i++) {
+            sheet.autoSizeColumn(i);
+        }
 	}
 	
-	public static void createFeuilleFacture(Workbook workbook, Facture facture) {
+	public static void createClasseurClientFactures(Workbook workbook, Client client) {
+		
+		// Création de la feuille des infos clients
+		createFeuilleClient(workbook, client);
+    	
+		// Créations des feuilles de facture
+    	for (Facture facture : client.getFactures()) {
+    		createFeuilleFacture(workbook, facture);
+    	}
+	}
+	
+	public static void createClasseurFactures(Workbook workbook, List<Client> clients) {
+
+    	for (Client client : clients) {
+    		XlsxUtils.createClasseurClientFactures(workbook, client);
+    	}
+
+	}
+	
+	private static void createFeuilleFacture(Workbook workbook, Facture facture) {
 		
 		// Création de la feuille
     	Sheet sheet = workbook.createSheet("Facture n° " + facture.getId());
@@ -61,6 +103,35 @@ public final class XlsxUtils {
     	XlsxUtils.formatPrix(workbook, row.getCell(4));
 	}
 	
+	private static void createFeuilleClient(Workbook workbook, Client client) {
+		
+		// Création de la feuille
+    	Sheet sheet = workbook.createSheet(client.getNom() + " " + client.getPrenom());
+    	
+    	// Remplissage
+    	Row row = sheet.createRow(0);
+    	row.createCell(0).setCellValue("Nom :");
+    	row.createCell(1).setCellValue(client.getNom());
+
+    	row = sheet.createRow(row.getRowNum() + 1);
+    	row.createCell(0).setCellValue("Prénom :");
+    	row.createCell(1).setCellValue(client.getPrenom());
+
+    	row = sheet.createRow(row.getRowNum() + 1);
+    	row.createCell(0).setCellValue("Date de naissance :");
+    	row.createCell(1).setCellValue(client.getDateNaissance().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+
+    	row = sheet.createRow(row.getRowNum() + 1);
+    	row.createCell(0).setCellValue("Age :");
+    	row.createCell(1).setCellValue(client.getAge());
+
+        // Redimensionnement automatique des colonnes
+        for(int i = 0; i < 2; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    	
+	}
+	
 	private static void createLigneFacture(Workbook workbook, Row row, LigneFacture ligneFacture) {
 
 		// Insertion des valeurs
@@ -76,6 +147,23 @@ public final class XlsxUtils {
 		
 	}
 	
+	private static void createLigneClient(Workbook workbook, Row row, Client client) {
+
+    	row.createCell(0).setCellValue(client.getId());
+    	row.createCell(1).setCellValue(client.getNom());
+    	row.createCell(2).setCellValue(client.getPrenom());
+    	row.createCell(3).setCellValue(client.getDateNaissance().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+    	// workbook.createCellStyle().setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("dd-MM-yyyy"));
+    	row.createCell(4).setCellValue(client.getAge());
+    	
+	}
 	
+	private static void formatPrix(Workbook workbook, Cell cell) {
+    	CellStyle stylePrix = workbook.createCellStyle();
+    	DataFormat format = workbook.createDataFormat();
+    	stylePrix.setDataFormat(format.getFormat("0.00€"));
+    	
+		cell.setCellStyle(stylePrix);
+	}
 	
 }
