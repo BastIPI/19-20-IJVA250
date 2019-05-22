@@ -45,5 +45,9 @@ public class LigneFacture {
 	public Long getId() {
 		return id;
 	}
+	
+	public Double getSousTotal() {
+		return quantite * article.getPrix();
+	}
     
 }

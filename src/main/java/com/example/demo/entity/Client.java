@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Set;
 
 /**
@@ -64,6 +65,10 @@ public class Client {
 
 	public void setFactures(Set<Facture> factures) {
 		this.factures = factures;
+	}
+	
+	public int getAge() {
+		return Period.between(dateNaissance, LocalDate.now()).getYears();
 	}
 
 }
