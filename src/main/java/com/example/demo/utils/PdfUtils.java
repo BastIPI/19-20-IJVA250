@@ -27,8 +27,14 @@ public final class PdfUtils {
 
         PdfPTable tableClient = new PdfPTable(1);
         
-        PdfPCell cell = new PdfPCell(new Phrase(client.getNom().toUpperCase() + " " + client.getPrenom(), fontHeader));
-        cell.setPadding(10f);
+        PdfPCell cell = new PdfPCell();
+        cell.addElement(new Phrase(client.getNom().toUpperCase() + " " + client.getPrenom(), fontHeader));
+        cell.addElement(new Phrase(client.getDateNaissance().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), fontCell));
+        
+        cell.setPaddingBottom(6f);
+        cell.setPaddingTop(2f);
+        cell.setPaddingLeft(10f);
+        cell.setPaddingRight(10f);
         tableClient.addCell(cell);
         tableClient.setWidthPercentage(40);
         tableClient.setHorizontalAlignment(Element.ALIGN_LEFT);

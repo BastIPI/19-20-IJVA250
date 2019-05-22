@@ -1,19 +1,18 @@
 package com.example.demo.utils;
 
-import java.io.OutputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.example.demo.entity.Client;
 import com.example.demo.entity.Facture;
@@ -79,6 +78,12 @@ public final class XlsxUtils {
     	row.createCell(2).setCellValue("Quantité");
     	row.createCell(3).setCellValue("Prix unitaire");
     	row.createCell(4).setCellValue("Total");
+
+    	formatFontBold(workbook, row.getCell(0));
+    	formatFontBold(workbook, row.getCell(1));
+    	formatFontBold(workbook, row.getCell(2));
+    	formatFontBold(workbook, row.getCell(3));
+    	formatFontBold(workbook, row.getCell(4));
     	
     	// Boucle sur les lignes de la facture
     	for (LigneFacture ligneFacture : facture.getLigneFactures()) {
@@ -97,6 +102,7 @@ public final class XlsxUtils {
     	sheet.addMergedRegion(mergedRegion);
     	Cell cellTotal = row.createCell(0);
     	cellTotal.setCellValue("Total :");
+    	formatFontBold(workbook, cellTotal);
     	CellUtil.setCellStyleProperty(cellTotal, CellUtil.ALIGNMENT, HorizontalAlignment.RIGHT); 
     	
     	row.createCell(4).setCellValue(facture.getTotal());
@@ -111,18 +117,22 @@ public final class XlsxUtils {
     	// Remplissage
     	Row row = sheet.createRow(0);
     	row.createCell(0).setCellValue("Nom :");
+    	formatFontBold(workbook, row.getCell(0));
     	row.createCell(1).setCellValue(client.getNom());
 
     	row = sheet.createRow(row.getRowNum() + 1);
     	row.createCell(0).setCellValue("Prénom :");
+    	formatFontBold(workbook, row.getCell(0));
     	row.createCell(1).setCellValue(client.getPrenom());
 
     	row = sheet.createRow(row.getRowNum() + 1);
     	row.createCell(0).setCellValue("Date de naissance :");
+    	formatFontBold(workbook, row.getCell(0));
     	row.createCell(1).setCellValue(client.getDateNaissance().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
 
     	row = sheet.createRow(row.getRowNum() + 1);
     	row.createCell(0).setCellValue("Age :");
+    	formatFontBold(workbook, row.getCell(0));
     	row.createCell(1).setCellValue(client.getAge());
 
         // Redimensionnement automatique des colonnes
@@ -164,6 +174,18 @@ public final class XlsxUtils {
     	stylePrix.setDataFormat(format.getFormat("0.00€"));
     	
 		cell.setCellStyle(stylePrix);
+	}
+
+	private static void formatFontBold(Workbook workbook, Cell cell) {
+    	CellStyle style = workbook.createCellStyle();
+
+    	Font font = workbook.createFont();
+
+    	font.setFontName("Courier New");
+    	font.setBold(true);
+    	
+    	style.setFont(font);
+    	cell.setCellStyle(style);
 	}
 	
 }
